@@ -48,7 +48,7 @@ seed_database.py
 Clone the repository:
 
 ```bash
-git clone <YOUR_GITHUB_REPOSITORY_URL>
+git clone https://github.com/shritej21/circle-recommendations-api.git
 cd circle-recommendations-takehome-main
 ```
 
