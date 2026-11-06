@@ -49,7 +49,7 @@ Clone the repository:
 
 ```bash
 git clone https://github.com/shritej21/circle-recommendations-api.git
-cd circle-recommendations-takehome-main
+cd circle-recommendations-api
 ```
 
 Create and activate a virtual environment:
