@@ -1,13 +1,22 @@
 
 import pytest
+from fastapi.testclient import TestClient
 
 from app.database import SessionLocal
-from app.models import Circle
-from app.services.recommendation import recommend_circles
-from fastapi.testclient import TestClient
 from app.main import app
+from app.services.recommendation import recommend_circles
+
+
+@pytest.fixture(scope="session", autouse=True)
+def seed_test_database():
+    """Seed the database once before running the test suite."""
+    from seed_database import seed_database
+
+    seed_database()
+
 
 client = TestClient(app)
+
 
 @pytest.fixture
 def db():
@@ -37,24 +46,23 @@ def test_obvious_topic_matches_rank_well(db):
 
     ids = get_circle_ids(results)
 
-   
     assert 6 in ids
-
-  
     assert results[0]["topic_score"] == 45.0
 
 
 def test_duplicate_topics_are_diversified(db):
-    results = recommend_circles(db, user_id=15, limit=10)
+    results = recommend_circles(db, user_id=15, limit=20)
 
     ids = get_circle_ids(results)
 
     negotiation_ids = {10, 11, 12}
-
     returned_duplicates = negotiation_ids.intersection(ids)
 
-   
+    # At most one Circle from this duplicate-topic group should appear.
     assert len(returned_duplicates) <= 1
+
+    # Recommendations should not contain duplicate Circle IDs.
+    assert len(ids) == len(set(ids))
 
 
 def test_full_and_inactive_circles_are_excluded(db):
@@ -62,11 +70,8 @@ def test_full_and_inactive_circles_are_excluded(db):
 
     ids = get_circle_ids(results)
 
-    
     assert 20 not in ids
     assert 21 not in ids
-
-    
     assert ids[0] == 22
 
 

@@ -41,6 +41,8 @@ docs/
   technical-design.md
 requirements.txt
 seed_database.py
+AI_NOTES.md
+README.md
 ```
 
 ## Setup
@@ -75,7 +77,7 @@ python seed_database.py
 
 The seed script loads the supplied users, Circles, topics, memberships, and activity data.
 
-**Note:** Running the seed script recreates the local database and replaces its existing contents.
+**Note:** Running the seed script drops and recreates the local database, replacing its existing contents.
 
 ## Run the API
 
@@ -87,8 +89,8 @@ python -m uvicorn app.main:app --reload
 
 The API will be available at:
 
-- Health check: `http://127.0.0.1:8000/`
-- Interactive API documentation: `http://127.0.0.1:8000/docs`
+- Health check: http://127.0.0.1:8000/
+- Interactive API documentation: http://127.0.0.1:8000/docs
 
 ## API Usage
 
@@ -125,18 +127,32 @@ Recommendations are generated in two stages:
 1. **Eligibility filtering:** Excludes existing memberships, private Circles, full Circles, and inactive Circles.
 2. **Ranking:** Scores eligible Circles using topic relevance, community activity, freshness, and accessibility. A diversity pass limits repeated primary topics.
 
-The ranking approach and database design are explained in [Technical Design](docs/technical-design.md).
+The ranking methodology, database design, and implementation trade-offs are explained in [Technical Design](docs/technical-design.md).
 
 ## Run Tests
 
-Make sure the database has been seeded, then run:
+Run the automated test suite:
 
 ```bash
 python -m pytest -v
 ```
 
-The test suite covers recommendation behavior and API responses, including cold-start users, topic matches, duplicate topics, full and inactive Circles, existing memberships, invalid limits, and unknown users.
+The test suite automatically seeds the database once per test session. No manual database seeding is required before running tests.
+
+**Note:** The test setup recreates the local SQLite database. Any existing local database contents will be replaced.
+
+The tests cover:
+
+- Cold-start recommendations
+- Topic relevance and ranking
+- Duplicate-topic diversity
+- Full and inactive Circle exclusion
+- Existing membership exclusion
+- Unknown users and invalid limits
+- API response structure and error handling
 
 ## Design Documentation
 
-See [`docs/technical-design.md`](docs/technical-design.md) for the database schema, ranking methodology, design decisions, and trade-offs.
+See [Technical Design](docs/technical-design.md) for the database schema, ranking methodology, design decisions, and trade-offs.
+
+See [AI Usage Notes](AI_NOTES.md) for transparency about the use of AI assistance during development.

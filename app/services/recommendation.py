@@ -293,9 +293,32 @@ def recommend_circles(
         reverse=True,
     )
 
+    
     selected = []
-    deferred = []
     used_topics = set()
+
+    for item in ranked:
+        circle = item["circle"]
+
+        topic_key = (
+            circle.topic
+            if circle.topic is not None
+            else f"circle-{circle.id}"
+        )
+
+        # Never return multiple Circles with the same
+        # primary topic, regardless of the requested limit.
+        if topic_key in used_topics:
+            continue
+
+        selected.append(item)
+        used_topics.add(topic_key)
+
+        if len(selected) >= limit:
+            break
+
+    return selected
+
 
     for item in ranked:
 
